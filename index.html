@@ -5,216 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Master Audit Template Builder & Editor</title>
   <style>
-    body { 
-      font-family: sans-serif; 
-      margin: 20px; 
-      background-color: #f8f9fa; 
-      color: #212529;
-    }
-    .container { 
-      max-width: 1000px; 
-      margin: 0 auto; 
-      background: white; 
-      padding: 30px; 
-      border-radius: 8px; 
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-    }
-    .header { 
-      text-align: center; 
-      margin-bottom: 25px; 
-    }
-    .header img { 
-      width: 120px; 
-      height: auto; 
-      margin-bottom: 10px; 
-      border-radius: 50%; 
-    }
-    h1 { 
-      color: #007bff; 
-      font-size: 1.8em; 
-      margin-bottom: 5px; 
-      margin-top: 0;
-    }
-    h2 { 
-      color: #6c757d; 
-      font-size: 1.1em; 
-      font-weight: normal; 
-      margin-top: 0; 
-    }
-    h3 { 
-      margin-top: 25px; 
-      color: #343a40; 
-      border-bottom: 2px solid #007bff; 
-      padding-bottom: 5px; 
-      font-size: 1.2em; 
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    label { 
-      display: block; 
-      margin-top: 15px; 
-      margin-bottom: 5px; 
-      font-weight: bold; 
-    }
-    input[type="text"], input[type="number"], select, textarea { 
-      width: 100%; 
-      padding: 10px; 
-      margin-bottom: 10px; 
-      border: 1px solid #ced4da; 
-      border-radius: 4px; 
-      box-sizing: border-box; 
-      font-size: 14px;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #80bdff;
-      box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-    }
+    body { font-family: sans-serif; margin: 20px; background-color: #f8f9fa; color: #212529; }
+    .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header img { width: 120px; height: auto; margin-bottom: 10px; border-radius: 50%; }
+    h1 { color: #007bff; font-size: 1.8em; margin-bottom: 5px; margin-top: 0; }
+    h2 { color: #6c757d; font-size: 1.1em; font-weight: normal; margin-top: 0; }
+    h3 { margin-top: 25px; color: #343a40; border-bottom: 2px solid #007bff; padding-bottom: 5px; font-size: 1.2em; display: flex; justify-content: space-between; align-items: center; }
+    label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold; }
+    input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #80bdff; box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); }
     
+    /* Blurred / subtle placeholder style */
+    ::placeholder { color: #adb5bd; font-style: italic; opacity: 0.8; }
+
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1.2fr 1fr; gap: 15px; }
 
     /* Mode Switcher Nav */
-    .mode-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      background: #e9ecef;
-      padding: 6px;
-      border-radius: 6px;
-    }
-    .mode-btn {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      background: transparent;
-      font-size: 14px;
-      font-weight: bold;
-      color: #495057;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .mode-btn.active {
-      background: white;
-      color: #007bff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+    .mode-bar { display: flex; gap: 10px; margin-bottom: 20px; background: #e9ecef; padding: 6px; border-radius: 6px; }
+    .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 14px; font-weight: bold; color: #495057; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+    .mode-btn.active { background: white; color: #007bff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
     /* Standard Card Aesthetics */
-    .item-card { 
-      background: #fdfdfd; 
-      border: 1px solid #e2e8f0; 
-      border-radius: 6px; 
-      padding: 15px; 
-      margin-bottom: 15px; 
-    }
-    .item-card-header { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      border-bottom: 1px solid #e2e8f0; 
-      padding-bottom: 8px; 
-      margin-bottom: 12px; 
-      font-weight: bold; 
-      color: #007bff; 
-    }
+    .item-card { background: #fdfdfd; border: 1px solid #e2e8f0; border-radius: 6px; padding: 15px; margin-bottom: 15px; }
+    .item-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px; font-weight: bold; color: #007bff; }
 
     /* Buttons */
-    .btn-action { 
-      background-color: #007bff; 
-      color: white; 
-      padding: 10px 15px; 
-      border: none; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-weight: bold;
-    }
+    .btn-action { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
     .btn-action:hover { background-color: #0056b3; }
-    
-    .btn-secondary { 
-      background-color: #6c757d; 
-      color: white; 
-      padding: 10px 15px; 
-      border: none; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-weight: bold;
-    }
+    .btn-secondary { background-color: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
     .btn-secondary:hover { background-color: #5a6268; }
-
-    .btn-add { 
-      background-color: #17a2b8; 
-      color: white; 
-      border: none; 
-      padding: 8px 14px; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-size: 0.9em; 
-      font-weight: bold;
-    }
+    .btn-add { background-color: #17a2b8; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
     .btn-add:hover { background-color: #138496; }
-
-    .btn-remove { 
-      background-color: #dc3545; 
-      color: white; 
-      border: none; 
-      padding: 4px 10px; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-size: 0.85em; 
-    }
+    .btn-remove { background-color: #dc3545; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; }
     .btn-remove:hover { background-color: #c82333; }
 
-    .action-btns { 
-      display: flex; 
-      gap: 15px; 
-      margin-top: 25px; 
-    }
-    .btn-submit { 
-      background-color: #28a745; 
-      color: white; 
-      padding: 12px; 
-      border: none; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-size: 1em; 
-      width: 70%; 
-      font-weight: bold; 
-    }
+    .action-btns { display: flex; gap: 15px; margin-top: 25px; }
+    .btn-submit { background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; width: 70%; font-weight: bold; }
     .btn-submit:hover { background-color: #218838; }
-    .btn-cancel { 
-      background-color: #6c757d; 
-      color: white; 
-      padding: 12px; 
-      border: none; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-size: 1em; 
-      width: 30%; 
-    }
+    .btn-cancel { background-color: #6c757d; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; width: 30%; }
     .btn-cancel:hover { background-color: #5a6268; }
 
-    #message-area { 
-      margin-top: 20px; 
-      padding: 12px; 
-      border-radius: 4px; 
-      text-align: center; 
-      display: none; 
-      font-weight: bold; 
-    }
-    .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    /* Success / Dialog Modal */
+    .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+    .modal-content { background-color: #ffffff; padding: 25px 30px; border-radius: 8px; text-align: center; max-width: 400px; width: 85%; box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+    .tick-icon { width: 60px; height: 60px; background-color: #d4edda; color: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 34px; margin: 0 auto 15px auto; }
+
+    #message-area { margin-top: 20px; padding: 12px; border-radius: 4px; text-align: center; display: none; font-weight: bold; }
     .error { background-color: #ffe6e6; color: red; border: 1px solid red; }
 
-    .footer { 
-      margin-top: 40px; 
-      padding-top: 15px; 
-      border-top: 1px solid #ced4da; 
-      font-size: 0.8em; 
-      color: #6c757d; 
-      text-align: center; 
-    }
+    .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ced4da; font-size: 0.8em; color: #6c757d; text-align: center; }
 
     @media (max-width: 768px) {
       .grid-2, .grid-4 { grid-template-columns: 1fr; }
@@ -222,24 +63,12 @@
       .btn-submit, .btn-cancel, .btn-secondary { width: 100% !important; }
     }
 
-    /* Print Area for Bedside Blank Form */
+    /* Print Area for Blank Form */
     #printableArea { display: none; }
     @media print {
       body * { visibility: hidden; }
       #printableArea, #printableArea * { visibility: visible; }
-      #printableArea {
-        display: block !important;
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        padding: 15px 25px;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-        font-size: 9.5pt;
-        color: #000;
-        background: #fff;
-      }
+      #printableArea { display: block !important; position: absolute; left: 0; top: 0; width: 100%; padding: 15px 25px; box-sizing: border-box; font-family: Arial, sans-serif; font-size: 9.5pt; color: #000; background: #fff; }
       .print-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
       .print-table th, .print-table td { border: 1px solid #000; padding: 5px 6px; text-align: center; }
       .print-table th.col-left, .print-table td.col-left { text-align: left; width: 40%; }
@@ -252,20 +81,17 @@
 <body>
 
 <div class="container">
-  <!-- Standard Header -->
   <div class="header">
     <img src="https://lh3.googleusercontent.com/d/1tCDAMimy_b0x9kRmWNyYMn4voR9Ynr0J" alt="Logo">
     <h1>Master Audit Template Builder & Editor</h1>
     <h2>Haemodialysis Unit, Sarawak General Hospital</h2>
   </div>
 
-  <!-- Mode Switcher -->
   <div class="mode-bar">
     <button type="button" class="mode-btn active" id="tabCreate" onclick="switchMode('CREATE')">✨ Create New Audit Template</button>
     <button type="button" class="mode-btn" id="tabEdit" onclick="switchMode('EDIT')">✏️ Edit Existing Template & Print Blank Form</button>
   </div>
 
-  <!-- Existing Audit Loader Panel (Edit Mode) -->
   <div id="editLoadPanel" class="item-card" style="display: none; background: #f8f9fa;">
     <label for="selectExistingAudit" style="margin-top: 0;">Select Registered Audit Template to Load:</label>
     <div style="display: flex; gap: 10px;">
@@ -276,16 +102,15 @@
     </div>
   </div>
 
-  <!-- Main Template Form -->
   <form id="templateForm">
     <div class="grid-2">
       <div>
-        <label for="auditId">Audit Unique Code (Audit ID)</label>
-        <input type="text" id="auditId" placeholder="e.g. AUD_FISTULA_CARE" required>
+        <label for="auditId">Audit Unique Code (Standardized ID)</label>
+        <input type="text" id="auditId" readonly style="background-color: #e9ecef; font-weight: bold;" value="Auto-Generated on Save (e.g. HDUSGH-AUD-2026-001)">
       </div>
       <div>
         <label for="auditTitle">Audit Title / Name</label>
-        <input type="text" id="auditTitle" placeholder="e.g. Audit on Fistula Care & Cannulation Technique" required>
+        <input type="text" id="auditTitle" placeholder="e.g. Fistula Care & Cannulation Technique" required>
       </div>
     </div>
 
@@ -317,7 +142,6 @@
       <button type="button" class="btn-add" onclick="addQuestionCard()">+ Add Criteria</button>
     </h3>
 
-    <!-- Dynamic Question Cards -->
     <div id="questionsContainer"></div>
 
     <div class="action-btns">
@@ -329,14 +153,23 @@
     <div id="message-area"></div>
   </form>
 
-  <!-- Standard Footer -->
   <div class="footer">
     &copy; Designed and developed by PPP Zulfadlie bin Janie<br>
     for Haemodialysis Unit, Sarawak General Hospital
   </div>
 </div>
 
-<!-- Printable Blank A4 Form for Bedside Rounds -->
+<!-- Success Popup Modal with Tick Symbol -->
+<div id="successModal" class="modal">
+  <div class="modal-content">
+    <div class="tick-icon">✓</div>
+    <h3 style="margin-top: 0; color: #28a745; border: none; justify-content: center; padding: 0;">Audit saved successfully</h3>
+    <p id="modalAuditIdInfo" style="font-size: 13.5px; color: #495057; margin: 10px 0 20px 0; font-family: monospace;"></p>
+    <button type="button" class="btn-submit" style="width: 100%;" onclick="closeSuccessModal()">OK</button>
+  </div>
+</div>
+
+<!-- Blank A4 Print Area -->
 <div id="printableArea">
   <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px;">
     <h2 style="margin: 0; font-size: 13pt;">HOSPITAL UMUM SARAWAK &bull; JABATAN NEFROLOGI</h2>
@@ -377,7 +210,6 @@
     resetForm();
   };
 
-  // Change scheme logic
   document.getElementById('scoringType').addEventListener('change', function() {
     applySchemeToAllCards(this.value);
   });
@@ -393,7 +225,7 @@
         input.value = 5;
         input.setAttribute('readonly', 'true');
         input.style.backgroundColor = '#e9ecef';
-      } else { // WEIGHTED
+      } else {
         input.removeAttribute('readonly');
         input.style.backgroundColor = '#ffffff';
       }
@@ -417,7 +249,7 @@
       loadPanel.style.display = 'none';
       btnPrint.style.display = 'none';
       btnSubmit.style.width = '70%';
-      auditIdInput.removeAttribute('readonly');
+      auditIdInput.value = "Auto-Generated on Save (e.g. HDUSGH-AUD-2026-001)";
       resetForm();
     } else {
       tabEdit.classList.add('active');
@@ -425,11 +257,11 @@
       loadPanel.style.display = 'block';
       btnPrint.style.display = 'inline-block';
       btnSubmit.style.width = '40%';
-      auditIdInput.setAttribute('readonly', 'true');
       fetchAuditList();
     }
   }
 
+  // Only blurred placeholders, actual value is empty
   function addQuestionCard(category = "", questionText = "", maxScore = null) {
     questionCounter++;
     const container = document.getElementById('questionsContainer');
@@ -450,7 +282,7 @@
       computedScore = 5;
       isReadOnly = "readonly";
       bgStyle = "background-color: #e9ecef;";
-    } else { // WEIGHTED
+    } else {
       computedScore = (maxScore !== null && maxScore !== undefined) ? maxScore : 5;
       isReadOnly = "";
       bgStyle = "background-color: #ffffff;";
@@ -463,12 +295,12 @@
       </div>
       <div>
         <label>Criteria / Indicator Statement</label>
-        <input type="text" class="q-text" value="${questionText}" placeholder="e.g. Clean site with 2% chlorhexidine prior to cannulation" required>
+        <input type="text" class="q-text" value="${escapeHtml(questionText)}" placeholder="e.g. Clean site with 2% chlorhexidine prior to cannulation" required>
       </div>
       <div class="grid-2">
         <div>
-          <label>Category / Procedure Phase</label>
-          <input type="text" class="q-cat" value="${category}" placeholder="e.g. Pre-Dialysis Cannulation" required>
+          <label>Category / Procedure Phase <span style="font-weight:normal; color:#6c757d;">(Optional)</span></label>
+          <input type="text" class="q-cat" value="${escapeHtml(category)}" placeholder="e.g. Pre-Dialysis Cannulation (Optional)">
         </div>
         <div>
           <label>Max Score / Weightage</label>
@@ -490,12 +322,13 @@
     document.getElementById('message-area').style.display = "none";
     document.getElementById('scoringType').value = "SCALE_0_5";
     document.getElementById('targetCompliance').value = "90";
+    if (currentMode === "CREATE") {
+      document.getElementById('auditId').value = "Auto-Generated on Save (e.g. HDUSGH-AUD-2026-001)";
+    }
     questionCounter = 0;
     
-    // Initial starting criteria
-    addQuestionCard("Pre-Dialysis Assessment", "General condition of patient assessed", 5);
-    addQuestionCard("Pre-Dialysis Assessment", "Vital signs checked and documented", 5);
-    addQuestionCard("Cannulation of Fistula", "Aseptic technique maintained throughout cannulation", 5);
+    // Exactly 1 clean criteria card with blurred placeholders
+    addQuestionCard("", "", 5);
   }
 
   function fetchAuditList() {
@@ -547,18 +380,18 @@
         document.getElementById('sampleCount').value = m.sampleCount;
         document.getElementById('targetCompliance').value = m.targetCompliance || 90;
         document.getElementById('scoringType').value = m.scoringType || "SCALE_0_5";
-        document.getElementById('committeePin').value = ""; // Require PIN to save edits
+        document.getElementById('committeePin').value = "";
 
         const container = document.getElementById('questionsContainer');
         container.innerHTML = "";
         questionCounter = 0;
 
         res.questions.forEach(q => {
-          addQuestionCard(q.category, q.questionText, q.maxScore);
+          addQuestionCard(q.category === "General" ? "" : q.category, q.questionText, q.maxScore);
         });
 
         applySchemeToAllCards(m.scoringType);
-        showMessage(`Loaded "${m.auditTitle}". Enter Committee PIN to save changes or click Print.`, "success");
+        showMessage(`Loaded "${m.auditTitle}". Enter Committee PIN to save changes or click Print.`, "normal");
       } else {
         showMessage("Failed to load: " + res.error, "error");
       }
@@ -566,7 +399,7 @@
     .catch(err => showMessage("Connection error: " + err, "error"));
   }
 
-  // Save or Update Template
+  // Save / Submit Template
   document.getElementById('templateForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -580,7 +413,7 @@
     cards.forEach(card => {
       questions.push({
         questionText: card.querySelector('.q-text').value.trim(),
-        category: card.querySelector('.q-cat').value.trim(),
+        category: card.querySelector('.q-cat').value.trim() || "General",
         maxScore: card.querySelector('.q-max').value
       });
     });
@@ -597,7 +430,7 @@
 
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.disabled = true;
-    submitBtn.textContent = "Saving to Google Sheets...";
+    submitBtn.textContent = "Saving to Database...";
 
     fetch(SCRIPT_API_URL, {
       method: "POST",
@@ -610,10 +443,9 @@
       submitBtn.textContent = "Save Audit Template";
 
       if (res.success) {
-        showMessage(res.message, "success");
-        if (currentMode === "CREATE") {
-          resetForm();
-        }
+        document.getElementById('modalAuditIdInfo').textContent = "Template ID: " + res.assignedAuditId;
+        document.getElementById('successModal').style.display = "flex";
+        if (currentMode === "CREATE") resetForm();
       } else {
         showMessage("Save Failed: " + res.error, "error");
       }
@@ -625,7 +457,10 @@
     });
   });
 
-  // Print Blank Bedside Observation Sheet
+  function closeSuccessModal() {
+    document.getElementById('successModal').style.display = "none";
+  }
+
   function printBlankForm() {
     const title = document.getElementById('auditTitle').value || "CLINICAL AUDIT CHECKLIST";
     const auditId = document.getElementById('auditId').value;
@@ -658,17 +493,13 @@
     let itemIdx = 1;
 
     cards.forEach(card => {
-      const cat = card.querySelector('.q-cat').value.trim();
+      const cat = card.querySelector('.q-cat').value.trim() || "General";
       const text = card.querySelector('.q-text').value.trim();
       const max = card.querySelector('.q-max').value;
 
       if (cat !== activeCat) {
         activeCat = cat;
-        html += `
-          <tr class="category-row">
-            <td colspan="${displayCols + 4}">${activeCat}</td>
-          </tr>
-        `;
+        html += `<tr class="category-row"><td colspan="${displayCols + 4}">${activeCat}</td></tr>`;
       }
 
       html += `
@@ -694,6 +525,11 @@
 
     document.getElementById('printTableElement').innerHTML = html;
     window.print();
+  }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#039;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
   function showMessage(text, type) {
