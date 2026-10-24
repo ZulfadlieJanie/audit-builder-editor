@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGH HDU | Master Audit Template Builder & Editor</title>
+    <style>
+        :root {
+            --hosp-primary: #003366;       /* Deep Hospital Navy */
+            --hosp-secondary: #0056b3;     /* Clinical Blue */
+            --hosp-accent: #28a745;        /* Compliance Green */
+            --hosp-danger: #dc3545;        /* Alert Red */
+            --hosp-bg: #f0f2f5;            /* Standard App BG */
+            --card-bg: #ffffff;
+            --border-color: #ced4da;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--hosp-bg);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px 10px;
+        }
+
+        .main-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border-top: 5px solid var(--hosp-primary);
+        }
+
+        /* ================= 1. STANDARD HOSPITAL HEADER ================= */
+        .hospital-header {
+            padding: 20px 25px;
+            background: #ffffff;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .header-titles h1 {
+            margin: 0;
+            font-size: 19px;
+            color: var(--hosp-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 800;
+        }
+
+        .header-titles h2 {
+            margin: 3px 0 0 0;
+            font-size: 14px;
+            color: var(--hosp-secondary);
+            font-weight: 600;
+        }
+
+        .header-titles p {
+            margin: 2px 0 0 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .system-badge {
+            background: #e7f1ff;
+            color: var(--hosp-secondary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid #b8daff;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        /* ================= 2. CONTENT AREA ================= */
+        .content-body {
+            padding: 25px 30px;
+        }
+
+        .mode-switch-bar {
+            display: flex;
+            background: #e9ecef;
+            padding: 4px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+
+        .mode-tab {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #495057;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .mode-tab.active {
+            background: #ffffff;
+            color: var(--hosp-primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .load-panel {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 18px;
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            color: var(--text-dark);
+            background-color: #fff;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--hosp-secondary);
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+        }
+
+        .section-divider {
+            border: 0;
+            border-top: 1px solid #e9ecef;
+            margin: 25px 0;
+        }
+
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 16px;
+            color: var(--hosp-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Question Cards */
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            border-left: 4px solid var(--hosp-secondary);
+            border-radius: 6px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            position: relative;
+        }
+
+        .btn-delete-q {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--hosp-danger);
+            color: #fff;
+            border: none;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-delete-q:hover { opacity: 0.9; }
+
+        /* Button Hierarchy */
+        .btn {
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--hosp-primary);
+            color: #ffffff;
+            flex: 2;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #ffffff;
+            flex: 1;
+        }
+
+        .btn-accent {
+            background-color: var(--hosp-accent);
+            color: #ffffff;
+        }
+
+        .btn:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .action-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .alert-box {
+            padding: 14px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-info { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+
+        /* ================= 3. STANDARD HOSPITAL FOOTER ================= */
+        .hospital-footer {
+            padding: 18px 25px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .hospital-footer a {
+            color: var(--hosp-secondary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* ================= PRINT ENGINE FOR A4 BLANK FORM ================= */
+        #printableArea { display: none; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printableArea, #printableArea * { visibility: visible; }
+            #printableArea {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 15px 25px;
+                box-sizing: border-box;
+                font-family: Arial, sans-serif;
+                font-size: 9.5pt;
+                color: #000;
+                background: #fff;
+            }
+
+            .print-header {
+                text-align: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 8px;
+                margin-bottom: 12px;
+            }
+
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+
+            .print-table th, .print-table td {
+                border: 1px solid #000;
+                padding: 5px 6px;
+                text-align: center;
+            }
+
+            .print-table th.col-left, .print-table td.col-left {
+                text-align: left;
+                width: 38%;
+            }
+
+            .print-table tr.category-header-row td {
+                background-color: #f2f2f2 !important;
+                -webkit-print-color-adjust: exact;
+                font-weight: bold;
+                text-align: left;
+                padding-left: 8px;
+            }
+
+            .signature-block {
+                margin-top: 35px;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .sign-col {
+                width: 42%;
+                border-top: 1px solid #000;
+                text-align: center;
+                padding-top: 5px;
+                font-weight: bold;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper" id="mainContainer">
+    
+    <!-- 1. STANDARD HOSPITAL HEADER -->
+    <header class="hospital-header">
+        <div class="header-brand">
+            <!-- Replace logo URL if you have a local or hosted asset -->
+            <img class="header-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Coat_of_arms_of_Malaysia.svg/300px-Coat_of_arms_of_Malaysia.svg.png" alt="MOH Malaysia Logo">
+            <div class="header-titles">
+                <h1>HOSPITAL UMUM SARAWAK</h1>
+                <h2>DEPARTMENT OF NEPHROLOGY | HAEMODIALYSIS UNIT</h2>
+                <p>Clinical Governance & Quality Improvement Management System</p>
+            </div>
+        </div>
+        <div class="system-badge">
+            Module: Audit Engine<br>
+            <span style="font-weight: normal; font-size: 11px;">v2.6 Standard</span>
+        </div>
+    </header>
+
+    <!-- 2. BODY CONTENT -->
+    <div class="content-body">
+        
+        <!-- Mode Switcher -->
+        <div class="mode-switch-bar">
+            <button type="button" class="mode-tab active" id="tabCreate" onclick="switchMode('CREATE')">✨ Create New Audit Template</button>
+            <button type="button" class="mode-tab" id="tabEdit" onclick="switchMode('EDIT')">✏️ Edit Existing Template & Print</button>
+        </div>
+
+        <!-- Load Panel (Editor Mode) -->
+        <div class="load-panel" id="loadPanel">
+            <label for="selectAudit">Select Registered Audit to Edit / Print:</label>
+            <div style="display: flex; gap: 12px;">
+                <select id="selectAudit" style="flex: 3;">
+                    <option value="">-- Choose Audit Template --</option>
+                </select>
+                <button type="button" class="btn btn-primary" style="flex: 1;" onclick="loadTemplateData()">📥 Load Template</button>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <form id="auditBuilderForm">
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="auditId">Audit Unique Code (Audit ID):</label>
+                    <input type="text" id="auditId" placeholder="e.g. AUD_FISTULA_CARE" required>
+                </div>
+                <div class="form-group">
+                    <label for="auditTitle">Audit Title / Name:</label>
+                    <input type="text" id="auditTitle" placeholder="e.g. Audit on Fistula Care & VND Prevention" required>
+                </div>
+            </div>
+
+            <div class="form-grid-3">
+                <div class="form-group">
+                    <label for="sampleCount">Target Samples (e.g. 10 or 20):</label>
+                    <input type="number" id="sampleCount" value="20" min="1" max="50" required>
+                </div>
+                <div class="form-group">
+                    <label for="scoringType">Marking Scheme:</label>
+                    <select id="scoringType" required>
+                        <option value="SCALE_0_5">Scale 0 - 5 (Technique / Quality)</option>
+                        <option value="YES_NO_NA">Yes / No / N/A (Binary Compliance)</option>
+                        <option value="WEIGHTED">Weighted Points (Custom Max Score)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="committeePin">Committee Secret PIN (4 Digits):</label>
+                    <input type="text" id="committeePin" maxlength="6" placeholder="e.g. 4821" required>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <div class="section-header-row">
+                <span class="section-title">Audit Criteria & Indicator Breakdown</span>
+                <button type="button" class="btn btn-accent" onclick="addQuestionCard()">+ Add Indicator Criteria</button>
+            </div>
+
+            <!-- Dynamic Question Cards -->
+            <div id="questionsContainer"></div>
+
+            <div class="action-container">
+                <button type="submit" class="btn btn-primary" id="btnSave">💾 Save Audit Template to Cloud</button>
+                <button type="button" class="btn btn-secondary" id="btnPrint" style="display: none;" onclick="printBlankAuditForm()">🖨️ Print Blank A4 Form</button>
+            </div>
+        </form>
+
+        <div id="alertBox" class="alert-box"></div>
+    </div>
+
+    <!-- 3. STANDARD HOSPITAL FOOTER -->
+    <footer class="hospital-footer">
+        <div>
+            <strong>Haemodialysis Unit</strong> &bull; Sarawak General Hospital, Jalan Hospital, 93586 Kuching, Sarawak
+        </div>
+        <div>
+            Clinical Governance Module &bull; Department Internal Use
+        </div>
+    </footer>
+
+</div>
+
+<!-- ================= 4. PRINTABLE A4 BLANK AUDIT SHEET ================= -->
+<div id="printableArea">
+    <div class="print-header">
+        <h2 style="margin: 0; font-size: 13pt; text-transform: uppercase;">Hospital Umum Sarawak &bull; Department of Nephrology</h2>
+        <h3 style="margin: 3px 0 0 0; font-size: 11pt;" id="printDocTitle">AUDIT OBSERVATION SHEET</h3>
+    </div>
+
+    <table style="width: 100%; font-size: 9pt; margin-bottom: 8px; border: none;">
+        <tr>
+            <td style="width: 50%; text-align: left;"><strong>Audit ID:</strong> <span id="printDocId"></span></td>
+            <td style="width: 50%; text-align: left;"><strong>Ward / Unit:</strong> ________________________________</td>
+        </tr>
+        <tr>
+            <td style="text-align: left;"><strong>Auditor Name:</strong> ________________________________</td>
+            <td style="text-align: left;"><strong>Audit Period / Date:</strong> ________________________________</td>
+        </tr>
+    </table>
+
+    <table class="print-table" id="printDataTable">
+        <!-- Rendered dynamically -->
+    </table>
+
+    <div style="margin-top: 15px; font-size: 8.5pt;">
+        <strong>ON-THE-SPOT REMARKS / CLINICAL OBSERVATIONS:</strong>
+        <div style="border: 1px solid #000; height: 45px; margin-top: 4px;"></div>
+    </div>
+
+    <div class="signature-block">
+        <div class="sign-col">Auditor Signature & Stamp</div>
+        <div class="sign-col">Head of Unit / Sister-in-Charge Signature</div>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_YnzwVZI-7i1uuGw4NlWd_caAECT5qyfvlu8Yh7UhFCqvonaWNdLIkf3wdVV5quJT/exec";
+
+    let currentMode = "CREATE";
+    let qCount = 0;
+
+    function switchMode(mode) {
+        currentMode = mode;
+        const tabCreate = document.getElementById('tabCreate');
+        const tabEdit = document.getElementById('tabEdit');
+        const loadPanel = document.getElementById('loadPanel');
+        const btnPrint = document.getElementById('btnPrint');
+        const auditIdField = document.getElementById('auditId');
+
+        if (mode === 'CREATE') {
+            tabCreate.classList.add('active');
+            tabEdit.classList.remove('active');
+            loadPanel.style.display = 'none';
+            btnPrint.style.display = 'none';
+            auditIdField.removeAttribute('readonly');
+            resetAuditForm();
+        } else {
+            tabEdit.classList.add('active');
+            tabCreate.classList.remove('active');
+            loadPanel.style.display = 'block';
+            btnPrint.style.display = 'inline-flex';
+            auditIdField.setAttribute('readonly', 'true');
+            fetchRegisteredAudits();
+        }
+    }
+
+    function addQuestionCard(category = "", questionText = "", maxScore = 5) {
+        qCount++;
+        const container = document.getElementById('questionsContainer');
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `qCard_${qCount}`;
+
+        card.innerHTML = `
+            <button type="button" class="btn-delete-q" onclick="removeQuestionCard('${card.id}')">Delete</button>
+            <div class="form-group" style="margin-top: 5px;">
+                <label>Indicator / Question Statement:</label>
+                <input type="text" class="q-text" value="${questionText}" placeholder="e.g. Site cleaning performed prior to cannulation" required>
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Category / Procedure Phase:</label>
+                    <input type="text" class="q-cat" value="${category}" placeholder="e.g. Cannulation of Fistula" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Max Score / Weightage:</label>
+                    <input type="number" class="q-max" value="${maxScore}" min="1" max="100" required>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    }
+
+    function removeQuestionCard(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    function resetAuditForm() {
+        document.getElementById('auditBuilderForm').reset();
+        document.getElementById('questionsContainer').innerHTML = "";
+        qCount = 0;
+        // Default sample questions inspired by Fistula Care Audit
+        addQuestionCard("Pre-Dialysis Assessment", "General condition of patient assessed", 1);
+        addQuestionCard("Pre-Dialysis Assessment", "Vital signs checked and documented", 5);
+        addQuestionCard("Cannulation of Fistula", "Aseptic technique maintained throughout cannulation", 1);
+    }
+
+    function fetchRegisteredAudits() {
+        showAlert("Loading audit templates from cloud...", "info");
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'getAuditList' })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                hideAlert();
+                const sel = document.getElementById('selectAudit');
+                sel.innerHTML = '<option value="">-- Choose Audit Template --</option>';
+                data.audits.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.auditId;
+                    opt.textContent = `${item.auditTitle} (${item.auditId})`;
+                    sel.appendChild(opt);
+                });
+            } else {
+                showAlert("Error loading list: " + data.error, "danger");
+            }
+        })
+        .catch(err => showAlert("Connection error: " + err, "danger"));
+    }
+
+    function loadTemplateData() {
+        const auditId = document.getElementById('selectAudit').value;
+        if (!auditId) {
+            alert("Please select an audit from the dropdown first.");
+            return;
+        }
+
+        showAlert("Retrieving template criteria...", "info");
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'getAuditQuestions', payload: { auditId: auditId } })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                hideAlert();
+                const m = data.meta;
+                document.getElementById('auditId').value = m.auditId;
+                document.getElementById('auditTitle').value = m.auditTitle;
+                document.getElementById('sampleCount').value = m.sampleCount;
+                document.getElementById('scoringType').value = m.scoringType;
+                document.getElementById('committeePin').value = ""; // Requires committee PIN to save edits
+
+                const container = document.getElementById('questionsContainer');
+                container.innerHTML = "";
+                qCount = 0;
+
+                data.questions.forEach(q => {
+                    addQuestionCard(q.category, q.questionText, q.maxScore);
+                });
+
+                showAlert(`Template "${m.auditTitle}" loaded. Enter Committee PIN to save changes or click Print Form.`, "success");
+            } else {
+                showAlert("Failed to load: " + data.error, "danger");
+            }
+        })
+        .catch(err => showAlert("Connection error: " + err, "danger"));
+    }
+
+    document.getElementById('auditBuilderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const cards = document.querySelectorAll('.question-card');
+        if (cards.length === 0) {
+            alert("Please include at least one audit criteria.");
+            return;
+        }
+
+        const questions = [];
+        cards.forEach(card => {
+            questions.push({
+                questionText: card.querySelector('.q-text').value.trim(),
+                category: card.querySelector('.q-cat').value.trim(),
+                maxScore: card.querySelector('.q-max').value
+            });
+        });
+
+        const payload = {
+            action: 'saveAuditTemplate',
+            payload: {
+                auditId: document.getElementById('auditId').value.trim(),
+                auditTitle: document.getElementById('auditTitle').value.trim(),
+                sampleCount: document.getElementById('sampleCount').value,
+                scoringType: document.getElementById('scoringType').value,
+                committeePin: document.getElementById('committeePin').value.trim(),
+                questions: questions
+            }
+        };
+
+        showAlert("Saving audit template to Google Sheets...", "info");
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, "success");
+                if (currentMode === 'CREATE') resetAuditForm();
+            } else {
+                showAlert("Save Rejected: " + data.error, "danger");
+            }
+        })
+        .catch(err => showAlert("Connection error: " + err, "danger"));
+    });
+
+    function printBlankAuditForm() {
+        const title = document.getElementById('auditTitle').value || "CLINICAL AUDIT CHECKLIST";
+        const auditId = document.getElementById('auditId').value;
+        const sampleCount = parseInt(document.getElementById('sampleCount').value, 10) || 10;
+        const cards = document.querySelectorAll('.question-card');
+
+        if (cards.length === 0) {
+            alert("No criteria loaded to print.");
+            return;
+        }
+
+        document.getElementById('printDocTitle').innerText = title.toUpperCase();
+        document.getElementById('printDocId').innerText = auditId;
+
+        // Up to 10 sample columns fit comfortably on portrait A4
+        const displayCols = Math.min(sampleCount, 10);
+        let html = `
+            <thead>
+                <tr>
+                    <th style="width: 25px;">No</th>
+                    <th class="col-left">Criteria / Quality Indicator</th>
+                    <th style="width: 40px;">Max</th>
+                    ${Array.from({length: displayCols}, (_, i) => `<th style="width: 30px;">S${i+1}</th>`).join('')}
+                    <th style="width: 45px;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        let activeCat = "";
+        let idx = 1;
+
+        cards.forEach(card => {
+            const cat = card.querySelector('.q-cat').value.trim();
+            const text = card.querySelector('.q-text').value.trim();
+            const max = card.querySelector('.q-max').value;
+
+            if (cat !== activeCat) {
+                activeCat = cat;
+                html += `
+                    <tr class="category-header-row">
+                        <td colspan="${displayCols + 4}">${activeCat}</td>
+                    </tr>
+                `;
+            }
+
+            html += `
+                <tr>
+                    <td>${idx++}</td>
+                    <td class="col-left">${text}</td>
+                    <td>${max}</td>
+                    ${Array.from({length: displayCols}, () => `<td></td>`).join('')}
+                    <td></td>
+                </tr>
+            `;
+        });
+
+        html += `
+            <tr style="font-weight: bold; background: #fafafa;">
+                <td colspan="2" style="text-align: right;">TOTAL SCORE:</td>
+                <td></td>
+                ${Array.from({length: displayCols}, () => `<td></td>`).join('')}
+                <td></td>
+            </tr>
+            </tbody>
+        `;
+
+        document.getElementById('printDataTable').innerHTML = html;
+        window.print();
+    }
+
+    function showAlert(msg, type) {
+        const box = document.getElementById('alertBox');
+        box.style.display = 'block';
+        box.innerText = msg;
+        box.className = 'alert-box ' + (type === 'success' ? 'alert-success' : (type === 'danger' ? 'alert-danger' : 'alert-info'));
+    }
+
+    function hideAlert() {
+        document.getElementById('alertBox').style.display = 'none';
+    }
+
+    window.onload = function() {
+        resetAuditForm();
+    };
+</script>
+
+</body>
+</html>
