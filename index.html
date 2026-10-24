@@ -73,7 +73,7 @@
     }
     
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1.2fr 1fr; gap: 15px; }
 
     /* Mode Switcher Nav */
     .mode-bar {
@@ -216,6 +216,12 @@
       text-align: center; 
     }
 
+    @media (max-width: 768px) {
+      .grid-2, .grid-4 { grid-template-columns: 1fr; }
+      .action-btns { flex-direction: column; }
+      .btn-submit, .btn-cancel, .btn-secondary { width: 100% !important; }
+    }
+
     /* Print Area for Bedside Blank Form */
     #printableArea { display: none; }
     @media print {
@@ -283,10 +289,14 @@
       </div>
     </div>
 
-    <div class="grid-3">
+    <div class="grid-4">
       <div>
         <label for="sampleCount">Target Samples</label>
         <input type="number" id="sampleCount" value="20" min="1" max="50" required>
+      </div>
+      <div>
+        <label for="targetCompliance">Target Compliance %</label>
+        <input type="number" id="targetCompliance" value="90" min="50" max="100" step="0.5" required>
       </div>
       <div>
         <label for="scoringType">Marking Scheme</label>
@@ -297,7 +307,7 @@
         </select>
       </div>
       <div>
-        <label for="committeePin">Committee Secret PIN</label>
+        <label for="committeePin">Committee PIN</label>
         <input type="text" id="committeePin" maxlength="6" placeholder="4-digit PIN" required>
       </div>
     </div>
@@ -367,7 +377,7 @@
     resetForm();
   };
 
-  // Dynamic listener for Marking Scheme change
+  // Change scheme logic
   document.getElementById('scoringType').addEventListener('change', function() {
     applySchemeToAllCards(this.value);
   });
@@ -398,6 +408,8 @@
     const btnPrint = document.getElementById('btnPrintBlank');
     const btnSubmit = document.getElementById('submitBtn');
     const auditIdInput = document.getElementById('auditId');
+
+    hideMessage();
 
     if (mode === 'CREATE') {
       tabCreate.classList.add('active');
@@ -477,9 +489,10 @@
     document.getElementById('questionsContainer').innerHTML = "";
     document.getElementById('message-area').style.display = "none";
     document.getElementById('scoringType').value = "SCALE_0_5";
+    document.getElementById('targetCompliance').value = "90";
     questionCounter = 0;
     
-    // Default initial template questions
+    // Initial starting criteria
     addQuestionCard("Pre-Dialysis Assessment", "General condition of patient assessed", 5);
     addQuestionCard("Pre-Dialysis Assessment", "Vital signs checked and documented", 5);
     addQuestionCard("Cannulation of Fistula", "Aseptic technique maintained throughout cannulation", 5);
@@ -489,6 +502,7 @@
     showMessage("Loading registered audit templates...", "normal");
     fetch(SCRIPT_API_URL, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action: "getAuditList" })
     })
     .then(res => res.json())
@@ -520,6 +534,7 @@
     showMessage("Loading template structure...", "normal");
     fetch(SCRIPT_API_URL, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action: "getAuditQuestions", payload: { auditId: auditId } })
     })
     .then(res => res.json())
@@ -530,8 +545,9 @@
         document.getElementById('auditId').value = m.auditId;
         document.getElementById('auditTitle').value = m.auditTitle;
         document.getElementById('sampleCount').value = m.sampleCount;
+        document.getElementById('targetCompliance').value = m.targetCompliance || 90;
         document.getElementById('scoringType').value = m.scoringType || "SCALE_0_5";
-        document.getElementById('committeePin').value = ""; // Require PIN for saving edits
+        document.getElementById('committeePin').value = ""; // Require PIN to save edits
 
         const container = document.getElementById('questionsContainer');
         container.innerHTML = "";
@@ -541,9 +557,7 @@
           addQuestionCard(q.category, q.questionText, q.maxScore);
         });
 
-        // Enforce score constraints based on loaded scheme
         applySchemeToAllCards(m.scoringType);
-
         showMessage(`Loaded "${m.auditTitle}". Enter Committee PIN to save changes or click Print.`, "success");
       } else {
         showMessage("Failed to load: " + res.error, "error");
@@ -552,7 +566,7 @@
     .catch(err => showMessage("Connection error: " + err, "error"));
   }
 
-  // Save Audit Template
+  // Save or Update Template
   document.getElementById('templateForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -575,6 +589,7 @@
       auditId: document.getElementById('auditId').value.trim(),
       auditTitle: document.getElementById('auditTitle').value.trim(),
       sampleCount: document.getElementById('sampleCount').value,
+      targetCompliance: document.getElementById('targetCompliance').value,
       scoringType: document.getElementById('scoringType').value,
       committeePin: document.getElementById('committeePin').value.trim(),
       questions: questions
@@ -586,6 +601,7 @@
 
     fetch(SCRIPT_API_URL, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action: "saveAuditTemplate", payload: payload })
     })
     .then(res => res.json())
@@ -595,7 +611,9 @@
 
       if (res.success) {
         showMessage(res.message, "success");
-        if (currentMode === "CREATE") resetForm();
+        if (currentMode === "CREATE") {
+          resetForm();
+        }
       } else {
         showMessage("Save Failed: " + res.error, "error");
       }
@@ -603,7 +621,7 @@
     .catch(err => {
       submitBtn.disabled = false;
       submitBtn.textContent = "Save Audit Template";
-      showMessage("Error: " + err, "error");
+      showMessage("Network Error: " + err, "error");
     });
   });
 
@@ -683,6 +701,11 @@
     msg.style.display = "block";
     msg.textContent = text;
     msg.className = type === "error" ? "error" : "success";
+    if (type === "normal") {
+      msg.style.backgroundColor = "#e2e3e5";
+      msg.style.color = "#383d41";
+      msg.style.border = "1px solid #d6d8db";
+    }
   }
 
   function hideMessage() {
