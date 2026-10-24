@@ -271,23 +271,24 @@
 
     const currentScheme = document.getElementById('scoringType').value;
     let computedScore = 5;
-    let isReadOnly = "";
-    let bgStyle = "";
+    let isReadOnly = false;
+    let bgStyle = "#ffffff";
 
     if (currentScheme === 'YES_NO_NA') {
       computedScore = 1;
-      isReadOnly = "readonly";
-      bgStyle = "background-color: #e9ecef;";
+      isReadOnly = true;
+      bgStyle = "#e9ecef";
     } else if (currentScheme === 'SCALE_0_5') {
       computedScore = 5;
-      isReadOnly = "readonly";
-      bgStyle = "background-color: #e9ecef;";
+      isReadOnly = true;
+      bgStyle = "#e9ecef";
     } else {
       computedScore = (maxScore !== null && maxScore !== undefined) ? maxScore : 5;
-      isReadOnly = "";
-      bgStyle = "background-color: #ffffff;";
+      isReadOnly = false;
+      bgStyle = "#ffffff";
     }
 
+    // Build card DOM safely
     card.innerHTML = `
       <div class="item-card-header">
         <span>Criteria #${questionCounter}</span>
@@ -295,21 +296,86 @@
       </div>
       <div>
         <label>Criteria / Indicator Statement</label>
-        <input type="text" class="q-text" value="${escapeHtml(questionText)}" placeholder="e.g. Clean site with 2% chlorhexidine prior to cannulation" required>
+        <input type="text" class="q-text" placeholder="e.g. Clean site with 2% chlorhexidine prior to cannulation" required>
       </div>
       <div class="grid-2">
         <div>
           <label>Category / Procedure Phase <span style="font-weight:normal; color:#6c757d;">(Optional)</span></label>
-          <input type="text" class="q-cat" value="${escapeHtml(category)}" placeholder="e.g. Pre-Dialysis Cannulation (Optional)">
+          <input type="text" class="q-cat" placeholder="e.g. Pre-Dialysis Cannulation (Optional)">
         </div>
         <div>
           <label>Max Score / Weightage</label>
-          <input type="number" class="q-max" value="${computedScore}" min="1" max="100" ${isReadOnly} style="${bgStyle}" required>
+          <input type="number" class="q-max" min="1" max="100" required>
         </div>
       </div>
     `;
+
+    // Safely assign values directly to avoid any HTML escaping/quoting issues
+    const textInput = card.querySelector('.q-text');
+    const catInput = card.querySelector('.q-cat');
+    const maxInput = card.querySelector('.q-max');
+
+    textInput.value = questionText || "";
+    catInput.value = (category && category !== "General") ? category : "";
+    maxInput.value = computedScore;
+  
+    if (isReadOnly) {
+      maxInput.setAttribute('readonly', 'true');
+    } else {
+      maxInput.removeAttribute('readonly');
+    }
+    maxInput.style.backgroundColor = bgStyle;
+
     container.appendChild(card);
   }
+
+  function loadTemplateDetails() {
+    const auditId = document.getElementById('selectExistingAudit').value;
+    if (!auditId) {
+      alert("Please select an audit template first.");
+      return;
+    }
+
+    showMessage("Loading template structure...", "normal");
+    fetch(SCRIPT_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "getAuditQuestions", payload: { auditId: auditId } })
+    })
+    .then(res => res.json())
+    .then(res => {
+      hideMessage();
+      if (res.success) {
+        const m = res.meta;
+        document.getElementById('auditId').value = m.auditId;
+        document.getElementById('auditTitle').value = m.auditTitle;
+        document.getElementById('sampleCount').value = m.sampleCount;
+        document.getElementById('targetCompliance').value = m.targetCompliance || 90;
+        document.getElementById('scoringType').value = m.scoringType || "SCALE_0_5";
+        document.getElementById('committeePin').value = ""; // Require PIN to save edits
+
+        // Clear existing cards completely
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = "";
+        questionCounter = 0;
+
+        // Populate every question returned by backend
+        if (res.questions && res.questions.length > 0) {
+          res.questions.forEach(q => {
+            addQuestionCard(q.category, q.questionText, q.maxScore);
+          });
+        } else {
+          addQuestionCard("", "", 5);
+        }
+
+        applySchemeToAllCards(m.scoringType);
+        showMessage(`Loaded ${res.questions.length} criteria for "${m.auditTitle}". Enter Committee PIN to save changes or click Print.`, "normal");
+      } else {
+        showMessage("Failed to load: " + res.error, "error");
+      }
+    })
+    .catch(err => showMessage("Connection error: " + err, "error"));
+    }
 
   function removeQuestionCard(cardId) {
     const el = document.getElementById(cardId);
