@@ -367,6 +367,29 @@
     resetForm();
   };
 
+  // Dynamic listener for Marking Scheme change
+  document.getElementById('scoringType').addEventListener('change', function() {
+    applySchemeToAllCards(this.value);
+  });
+
+  function applySchemeToAllCards(scheme) {
+    const maxInputs = document.querySelectorAll('#questionsContainer .q-max');
+    maxInputs.forEach(input => {
+      if (scheme === 'YES_NO_NA') {
+        input.value = 1;
+        input.setAttribute('readonly', 'true');
+        input.style.backgroundColor = '#e9ecef';
+      } else if (scheme === 'SCALE_0_5') {
+        input.value = 5;
+        input.setAttribute('readonly', 'true');
+        input.style.backgroundColor = '#e9ecef';
+      } else { // WEIGHTED
+        input.removeAttribute('readonly');
+        input.style.backgroundColor = '#ffffff';
+      }
+    });
+  }
+
   function switchMode(mode) {
     currentMode = mode;
     const tabCreate = document.getElementById('tabCreate');
@@ -395,12 +418,31 @@
     }
   }
 
-  function addQuestionCard(category = "", questionText = "", maxScore = 5) {
+  function addQuestionCard(category = "", questionText = "", maxScore = null) {
     questionCounter++;
     const container = document.getElementById('questionsContainer');
     const card = document.createElement('div');
     card.className = "item-card";
     card.id = `qCard_${questionCounter}`;
+
+    const currentScheme = document.getElementById('scoringType').value;
+    let computedScore = 5;
+    let isReadOnly = "";
+    let bgStyle = "";
+
+    if (currentScheme === 'YES_NO_NA') {
+      computedScore = 1;
+      isReadOnly = "readonly";
+      bgStyle = "background-color: #e9ecef;";
+    } else if (currentScheme === 'SCALE_0_5') {
+      computedScore = 5;
+      isReadOnly = "readonly";
+      bgStyle = "background-color: #e9ecef;";
+    } else { // WEIGHTED
+      computedScore = (maxScore !== null && maxScore !== undefined) ? maxScore : 5;
+      isReadOnly = "";
+      bgStyle = "background-color: #ffffff;";
+    }
 
     card.innerHTML = `
       <div class="item-card-header">
@@ -418,7 +460,7 @@
         </div>
         <div>
           <label>Max Score / Weightage</label>
-          <input type="number" class="q-max" value="${maxScore}" min="1" max="100" required>
+          <input type="number" class="q-max" value="${computedScore}" min="1" max="100" ${isReadOnly} style="${bgStyle}" required>
         </div>
       </div>
     `;
@@ -434,12 +476,13 @@
     document.getElementById('templateForm').reset();
     document.getElementById('questionsContainer').innerHTML = "";
     document.getElementById('message-area').style.display = "none";
+    document.getElementById('scoringType').value = "SCALE_0_5";
     questionCounter = 0;
     
-    // Default starting questions
-    addQuestionCard("Pre-Dialysis Assessment", "General condition of patient assessed", 1);
+    // Default initial template questions
+    addQuestionCard("Pre-Dialysis Assessment", "General condition of patient assessed", 5);
     addQuestionCard("Pre-Dialysis Assessment", "Vital signs checked and documented", 5);
-    addQuestionCard("Cannulation of Fistula", "Aseptic technique maintained throughout cannulation", 1);
+    addQuestionCard("Cannulation of Fistula", "Aseptic technique maintained throughout cannulation", 5);
   }
 
   function fetchAuditList() {
@@ -487,8 +530,8 @@
         document.getElementById('auditId').value = m.auditId;
         document.getElementById('auditTitle').value = m.auditTitle;
         document.getElementById('sampleCount').value = m.sampleCount;
-        document.getElementById('scoringType').value = m.scoringType;
-        document.getElementById('committeePin').value = ""; // Requires PIN to save edits
+        document.getElementById('scoringType').value = m.scoringType || "SCALE_0_5";
+        document.getElementById('committeePin').value = ""; // Require PIN for saving edits
 
         const container = document.getElementById('questionsContainer');
         container.innerHTML = "";
@@ -497,6 +540,9 @@
         res.questions.forEach(q => {
           addQuestionCard(q.category, q.questionText, q.maxScore);
         });
+
+        // Enforce score constraints based on loaded scheme
+        applySchemeToAllCards(m.scoringType);
 
         showMessage(`Loaded "${m.auditTitle}". Enter Committee PIN to save changes or click Print.`, "success");
       } else {
